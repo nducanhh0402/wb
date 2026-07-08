@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gia Sư | Quản lý Chấm công</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .user-profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--panel-border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .month-filter-container {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .month-filter-container label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-right: 0.75rem;
+            font-weight: 500;
+        }
+
+        .month-filter-container input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .month-filter-container input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Form Input -->
+        <aside class="sidebar glass-panel">
+            <div class="logo" style="margin-bottom: 1.5rem;">
+                <div class="logo-icon">📚</div>
+                <h2>TutorTrack</h2>
+            </div>
+
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <span id="display-username">Đang tải...</span>
+                </div>
+                <button id="btn-logout" class="btn-logout">Thoát</button>
+            </div>
+
+            <form id="entry-form" class="entry-form">
+                <h3>Thêm ca dạy mới</h3>
+
+                <div class="form-group">
+                    <label for="studentName">Tên học sinh</label>
+                    <input type="text" id="studentName" required placeholder="VD: Tuấn Vũ">
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Ngày dạy</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fee">Mức phí (VNĐ)</label>
+                    <input type="number" id="fee" required placeholder="VD: 200000" min="0" step="1000">
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Ghi chú (Tùy chọn)</label>
+                    <textarea id="notes" rows="3" placeholder="Nội dung bài dạy..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button type="submit" class="btn-primary" id="btn-submit" style="flex: 1; margin-top: 0;">
+                        <span id="btn-submit-text">Lưu ca dạy</span>
+                    </button>
+                    <button type="button" id="btn-cancel-edit"
+                        style="display: none; padding: 0.875rem; border-radius: 10px; font-weight: 600; cursor: pointer; border: 1px solid var(--panel-border); background: rgba(255,255,255,0.1); color: var(--text-main); transition: all 0.2s;">Hủy</button>
+                </div>
+            </form>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-top">
+                    <h1>Tổng quan thu nhập</h1>
+                </div>
+                <p class="subtitle" style="margin-bottom: 1rem;">Dữ liệu phân luồng tự động. Nhấp vào các tháng bên dưới
+                    để xem lại lịch sử.</p>
+                <div class="month-pills-wrapper" id="month-pills-container">
+                    <!-- Javascript will render pills here -->
+                </div>
+            </header>
+
+            <!-- Dashboard Stats -->
+            <div class="stats-grid">
+                <div class="stat-card glass-panel highlight-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h4 id="title-grand-total">Thu Nhập Trong Tháng</h4>
+                        <h2 id="grand-total">0 đ</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thống kê từng học sinh -->
+            <div class="section-container glass-panel mt-2">
+                <div class="section-header">
+                    <h3 id="title-stats">Thống kê theo học sinh (Trong tháng)</h3>
+                </div>
+                <div class="student-stats-grid" id="student-stats-container">
+                    <!-- Javascript will render cards here -->
+                </div>
+            </div>
+
+            <!-- Bảng Lịch sử -->
+            <div class="section-container glass-panel mt-2">
+                <div class="section-header">
+                    <h3 id="title-history">Lịch sử ca dạy (Trong tháng)</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Học sinh</th>
+                                <th>Mức phí</th>
+                                <th>Ghi chú</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Javascript will render rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
